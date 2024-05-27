@@ -2,10 +2,13 @@ const pool = require('../db.js');
 
 const getAllImages = async (req, res) => {
     try {
-        const query = 'SELECT image FROM images';
+        const query = 'SELECT id, encode(image, \'base64\') AS image FROM images';
         const { rows } = await pool.query(query);
 
-        const images = rows.map(row => row.image.toString('base64'));
+        const images = rows.map(row => ({
+            id: row.id,
+            imageUrl: `data:image/jpeg;base64,${row.image}`
+        }));
 
         res.status(200).json({ images });
     } catch (error) {
